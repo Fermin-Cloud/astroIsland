@@ -1,0 +1,43 @@
+---
+import { xmlToJsonUtil } from "xml-to-json-util";
+import Play from "@/components/svg/Play.astro";
+
+const req = await fetch(
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCUSxKiac-miugK9CDsxGS9Q"
+);
+
+const xml = await req.text();
+
+const parsedXml = xmlToJsonUtil(xml);
+
+const finalVideos = parsedXml.feed.entry.slice(0, 3).map((video: any) => {
+  return {
+    title: video.title,
+    id: video["yt:videoId"],
+  };
+});
+
+console.log(finalVideos);
+
+await new Promise((resolve) => {
+  return setTimeout(resolve, 2000);
+});
+---
+
+{
+  finalVideos.map(({ title, id }) => {
+    return (
+      <div class="border-2 p-4 rounded w-60 h-40 grid place-item-center animate-pulse">
+        <a href={`https://www.youtube.com/watch?v=${id}`}>
+          <img
+            src={`https://img.youtube.com/vi/${id}/maxresdefault.jpg`}
+            alt={title}
+            height={165}
+            width={300}
+          />
+        </a>
+        <Play />
+      </div>
+    );
+  })
+}
